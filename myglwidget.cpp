@@ -71,6 +71,8 @@ void myGLWidget::paintGL()
 
     float fPitchScale = 0.3;
     int iCount = 0;
+    int iNumSegments = 100;
+    float x1,x2,y1,y2;
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -106,6 +108,54 @@ void myGLWidget::paintGL()
 
 
     glPushMatrix();
+    glTranslatef(0.0,-0.8,0.0);
+
+    glPushMatrix();
+    // draw top marker
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_POLYGON);
+        glVertex3f(0.0, 0.5, 0.0);
+        glVertex3f(0.05, 0.55, 0.0);
+        glVertex3f(-0.05,0.55,0.0);
+    glEnd();
+    glPopMatrix();
+
+    // yaw
+    glRotatef((float)xRot,0.0,0.0,1.0);
+
+    // draw compass rose
+    glColor3f(1.0,1.0,1.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINES);
+
+    // minor ticks
+    for(iCount=0;iCount < 360;iCount = iCount + 5)
+    {
+        x1 = 0.5 * cos((float)iCount * DEG2RAD);
+        y1 = 0.5 * sin((float)iCount * DEG2RAD);
+        x2 = 0.45 * cos((float)iCount * DEG2RAD);
+        y2 = 0.45 * sin((float)iCount * DEG2RAD);
+        glVertex3f(x1,y1,0.0);
+        glVertex3f(x2,y2,0.0);
+    }
+
+    // major ticks
+    for(iCount=0;iCount < 360;iCount = iCount + 10)
+    {
+        x1 = 0.5 * cos((float)iCount * DEG2RAD);
+        y1 = 0.5 * sin((float)iCount * DEG2RAD);
+        x2 = 0.4 * cos((float)iCount * DEG2RAD);
+        y2 = 0.4 * sin((float)iCount * DEG2RAD);
+        glVertex3f(x1,y1,0.0);
+        glVertex3f(x2,y2,0.0);
+    }
+
+    glEnd();
+
+    glPopMatrix();
+
+
+    glPushMatrix();
 
     glLoadIdentity();
 
@@ -119,8 +169,7 @@ void myGLWidget::paintGL()
     float fRadius = 0.8;
     float fStartAngle = 150.0 * DEG2RAD;
     float fEndAngle = 30.0 * DEG2RAD;
-    int iNumSegments = 100;
-    float x1,x2,y1,y2;
+
     glBegin(GL_LINES);
         for(iCount=0;iCount<iNumSegments;iCount++)
         {
@@ -231,14 +280,10 @@ void myGLWidget::paintGL()
         glVertex3f(-0.05,0.85,0.0);
     glEnd();
 
-
-
-
     glPushMatrix();
 
     // pitch
     glTranslatef(0.0,10.0*fPitchScale*(float)yRot/90.0,0.0);
-
 
     glEnable(GL_SCISSOR_TEST);
 
@@ -246,9 +291,9 @@ void myGLWidget::paintGL()
     int iWindowHeight = this->height();
 
     int iClipX = iWindowWidth/2 - 0.3 * iWindowWidth;
-    int iClipY = iWindowHeight/2 - 0.3 *  iWindowHeight;
+    int iClipY = iWindowHeight/2 - 0.1 *  iWindowHeight;
     int iClipWidth = iWindowWidth * 0.6;
-    int iClipHeight = iWindowHeight * 0.6;
+    int iClipHeight = iWindowHeight * 0.4;
 
     glScissor(iClipX, iClipY, iClipWidth,iClipHeight);
 
@@ -302,6 +347,9 @@ void myGLWidget::paintGL()
 
     glPopMatrix();
     glPopMatrix();
+
+
+
 
 
 }
