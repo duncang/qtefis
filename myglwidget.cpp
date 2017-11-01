@@ -61,7 +61,6 @@ void myGLWidget::initializeGL()
     glEnable(GL_LIGHTING);
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_BLEND);
-    //glBlendFunc( GL_SRC_ALPHA_SATURATE, GL_ONE ) ;
 
     glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
     glEnable(GL_COLOR_MATERIAL);
@@ -98,6 +97,7 @@ void myGLWidget::paintGL()
 
 
     // draw top marker
+    glColor3f(1.0,1.0,1.0);
     glBegin(GL_POLYGON);
         glVertex3f(0.0, 0.8, 0.0);
         glVertex3f(0.05, 0.75, 0.0);
@@ -224,6 +224,7 @@ void myGLWidget::paintGL()
     glEnd();
 
     // draw top marker
+    glColor3f(1.0,1.0,1.0);
     glBegin(GL_POLYGON);
         glVertex3f(0.0, 0.8, 0.0);
         glVertex3f(0.05, 0.85, 0.0);
@@ -238,6 +239,18 @@ void myGLWidget::paintGL()
     // pitch
     glTranslatef(0.0,10.0*fPitchScale*(float)yRot/90.0,0.0);
 
+
+    glEnable(GL_SCISSOR_TEST);
+
+    int iWindowWidth = this->width();
+    int iWindowHeight = this->height();
+
+    int iClipX = iWindowWidth/2 - 0.3 * iWindowWidth;
+    int iClipY = iWindowHeight/2 - 0.3 *  iWindowHeight;
+    int iClipWidth = iWindowWidth * 0.6;
+    int iClipHeight = iWindowHeight * 0.6;
+
+    glScissor(iClipX, iClipY, iClipWidth,iClipHeight);
 
     // pitch marks
     glColor3f(1.0,1.0,1.0);
@@ -266,6 +279,8 @@ void myGLWidget::paintGL()
 
     }
     glEnd();
+
+    glDisable(GL_SCISSOR_TEST);
 
     // sky
     glColor3f(0.0,0.0,1.0);
