@@ -4,6 +4,7 @@
 #include <QOpenGLWidget>
 
 #include <math.h>
+#include <QPainter>
 
 #define PI 3.1415926
 #define RAD2DEG (180.0 / PI)
@@ -152,7 +153,12 @@ void myGLWidget::paintGL()
 
     glEnd();
 
+
     glPopMatrix();
+
+    // get a font
+    //QFont sansFont("Helvetica", 12);
+    //rendertext(0.0,0.0,0.0,"test text",sansFont);
 
 
     glPushMatrix();
@@ -367,6 +373,25 @@ void myGLWidget::resizeGL(int width, int height)
 }
 
 
+
+void myGLWidget::renderText(double x, double y, double z, const QString &str, const QFont & font)
+{
+    // Identify x and y locations to render text within widget
+    int height = this->height();
+    GLdouble textPosX = x, textPosY = y, textPosZ = z;
+
+    // Retrieve last OpenGL color to use as a font color
+    GLdouble glColor[4];
+    glGetDoublev(GL_CURRENT_COLOR, glColor);
+    QColor fontColor = QColor(glColor[0], glColor[1], glColor[2], glColor[3]);
+
+    // Render text
+    QPainter painter(this);
+    painter.setPen(fontColor);
+    painter.setFont(font);
+    painter.drawText(textPosX, textPosY, str);
+    painter.end();
+}
 
 
 

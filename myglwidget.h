@@ -35,6 +35,7 @@ protected:
 private:
 
     int xRot, yRot, zRot;
+    void renderText(double x, double y, double z, const QString &str, const QFont & font);
 
 };
 
