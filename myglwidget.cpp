@@ -78,87 +78,12 @@ void myGLWidget::paintGL()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-    // render ownship icon
-    glColor3f(1.0,1.0,0.0);
-    glLineWidth(1.0);
-    glBegin(GL_POLYGON);
-        glVertex3f(0.0, 0.0, 0.0);
-        glVertex3f(0.2, -0.1, 0.0);
-        glVertex3f(0.0,-0.05,0.0);
-        glVertex3f(-0.2, -0.1, 0.0);
-    glEnd();
-
-    glColor3f(1.0,1.0,0.0);
-    glLineWidth(2.0);
-    glBegin(GL_LINES);
-        glVertex3f(-0.5,0.0,0.0);
-        glVertex3f(-0.3,0.0,0.0);
-
-        glVertex3f(0.5,0.0,0.0);
-        glVertex3f(0.3,0.0,0.0);
-    glEnd();
 
 
-    // draw top marker
-    glColor3f(1.0,1.0,1.0);
-    glBegin(GL_POLYGON);
-        glVertex3f(0.0, 0.8, 0.0);
-        glVertex3f(0.05, 0.75, 0.0);
-        glVertex3f(-0.05,0.75,0.0);
-    glEnd();
 
 
-    glPushMatrix();
-    glTranslatef(0.0,-0.8,0.0);
-
-    glPushMatrix();
-    // draw top marker
-    glColor3f(1.0,1.0,1.0);
-    glBegin(GL_POLYGON);
-        glVertex3f(0.0, 0.5, 0.0);
-        glVertex3f(0.05, 0.55, 0.0);
-        glVertex3f(-0.05,0.55,0.0);
-    glEnd();
-    glPopMatrix();
-
-    // yaw
-    glRotatef((float)xRot,0.0,0.0,1.0);
-
-    // draw compass rose
-    glColor3f(1.0,1.0,1.0);
-    glLineWidth(1.0);
-    glBegin(GL_LINES);
-
-    // minor ticks
-    for(iCount=0;iCount < 360;iCount = iCount + 5)
-    {
-        x1 = 0.5 * cos((float)iCount * DEG2RAD);
-        y1 = 0.5 * sin((float)iCount * DEG2RAD);
-        x2 = 0.45 * cos((float)iCount * DEG2RAD);
-        y2 = 0.45 * sin((float)iCount * DEG2RAD);
-        glVertex3f(x1,y1,0.0);
-        glVertex3f(x2,y2,0.0);
-    }
-
-    // major ticks
-    for(iCount=0;iCount < 360;iCount = iCount + 10)
-    {
-        x1 = 0.5 * cos((float)iCount * DEG2RAD);
-        y1 = 0.5 * sin((float)iCount * DEG2RAD);
-        x2 = 0.4 * cos((float)iCount * DEG2RAD);
-        y2 = 0.4 * sin((float)iCount * DEG2RAD);
-        glVertex3f(x1,y1,0.0);
-        glVertex3f(x2,y2,0.0);
-    }
-
-    glEnd();
 
 
-    glPopMatrix();
-
-    // get a font
-    //QFont sansFont("Helvetica", 12);
-    //rendertext(0.0,0.0,0.0,"test text",sansFont);
 
 
     glPushMatrix();
@@ -167,6 +92,78 @@ void myGLWidget::paintGL()
 
     // roll
     glRotatef((float)zRot,0.0,0.0,1.0);
+
+
+    glPushMatrix();
+
+    // pitch
+    glTranslatef(0.0,10.0*fPitchScale*(float)yRot/90.0,0.0);
+
+
+    // sky
+    glColor3f(0.0,0.0,1.0);
+    glBegin(GL_POLYGON);
+     glVertex3f(-10.0, 0.0, 0.0);
+     glVertex3f(10.0, 0.0, 0.0);
+     glVertex3f(10.0, 10.0, 0.0);
+     glVertex3f(-10.0, 10.0, 0.0);
+    glEnd();
+
+    // ground
+    glColor3f(0.5,0.3,0.3);
+    glBegin(GL_POLYGON);
+     glVertex3f(-10.0, 0.0, 0.0);
+     glVertex3f(10.0, 0.0, 0.0);
+     glVertex3f(10.0, -10.0, 0.0);
+     glVertex3f(-10.0, -10.0, 0.0);
+    glEnd();
+
+
+    glEnable(GL_SCISSOR_TEST);
+
+    int iWindowWidth = this->width();
+    int iWindowHeight = this->height();
+
+    int iClipX = iWindowWidth/2 - 0.3 * iWindowWidth;
+    int iClipY = iWindowHeight/2 - 0.1 *  iWindowHeight;
+    int iClipWidth = iWindowWidth * 0.6;
+    int iClipHeight = iWindowHeight * 0.4;
+
+    glScissor(iClipX, iClipY, iClipWidth,iClipHeight);
+
+    // pitch marks
+    glColor3f(1.0,1.0,1.0);
+    glLineWidth(1.0);
+    glBegin(GL_LINES);
+
+    for (iCount = 0;iCount<10;iCount++)
+    {
+        float fPitchLineOffset = iCount*1.0*fPitchScale;
+
+        // major line
+        glVertex3f(-0.3,fPitchLineOffset,0.0);
+        glVertex3f(0.3,fPitchLineOffset,0.0);
+
+        // major line
+        glVertex3f(-0.3,-fPitchLineOffset,0.0);
+        glVertex3f(0.3,-fPitchLineOffset,0.0);
+
+
+        // minor line
+        glVertex3f(-0.15,fPitchLineOffset + 0.5 * fPitchScale,0.0);
+        glVertex3f(0.15,fPitchLineOffset + 0.5 * fPitchScale,0.0);
+
+        glVertex3f(-0.15,-fPitchLineOffset - 0.5 * fPitchScale,0.0);
+        glVertex3f(0.15,-fPitchLineOffset - 0.5 * fPitchScale,0.0);
+
+    }
+    glEnd();
+
+    glDisable(GL_SCISSOR_TEST);
+
+    glPopMatrix();
+
+
 
     glColor3f(1.0,1.0,1.0);
     glLineWidth(2.0);
@@ -286,76 +283,94 @@ void myGLWidget::paintGL()
         glVertex3f(-0.05,0.85,0.0);
     glEnd();
 
+
+    glPopMatrix();
+
+    // render ownship icon
+    glColor3f(1.0,1.0,0.0);
+    glLineWidth(1.0);
+    glBegin(GL_POLYGON);
+        glVertex3f(0.0, 0.0, 0.0);
+        glVertex3f(0.2, -0.1, 0.0);
+        glVertex3f(0.0,-0.05,0.0);
+        glVertex3f(-0.2, -0.1, 0.0);
+    glEnd();
+
+    glColor3f(1.0,1.0,0.0);
+    glLineWidth(2.0);
+    glBegin(GL_LINES);
+        glVertex3f(-0.5,0.0,0.0);
+        glVertex3f(-0.3,0.0,0.0);
+
+        glVertex3f(0.5,0.0,0.0);
+        glVertex3f(0.3,0.0,0.0);
+    glEnd();
+
+
+    // draw top marker
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_POLYGON);
+        glVertex3f(0.0, 0.8, 0.0);
+        glVertex3f(0.05, 0.75, 0.0);
+        glVertex3f(-0.05,0.75,0.0);
+    glEnd();
+
+
     glPushMatrix();
+    glTranslatef(0.0,-0.8,0.0);
 
-    // pitch
-    glTranslatef(0.0,10.0*fPitchScale*(float)yRot/90.0,0.0);
+    glPushMatrix();
+    // draw top marker
+    glColor3f(1.0,1.0,1.0);
+    glBegin(GL_POLYGON);
+        glVertex3f(0.0, 0.5, 0.0);
+        glVertex3f(0.05, 0.55, 0.0);
+        glVertex3f(-0.05,0.55,0.0);
+    glEnd();
+    glPopMatrix();
 
-    glEnable(GL_SCISSOR_TEST);
+    // yaw
+    glRotatef((float)xRot,0.0,0.0,1.0);
 
-    int iWindowWidth = this->width();
-    int iWindowHeight = this->height();
-
-    int iClipX = iWindowWidth/2 - 0.3 * iWindowWidth;
-    int iClipY = iWindowHeight/2 - 0.1 *  iWindowHeight;
-    int iClipWidth = iWindowWidth * 0.6;
-    int iClipHeight = iWindowHeight * 0.4;
-
-    glScissor(iClipX, iClipY, iClipWidth,iClipHeight);
-
-    // pitch marks
+    // draw compass rose
     glColor3f(1.0,1.0,1.0);
     glLineWidth(1.0);
     glBegin(GL_LINES);
 
-    for (iCount = 0;iCount<10;iCount++)
+    // minor ticks
+    for(iCount=0;iCount < 360;iCount = iCount + 5)
     {
-        float fPitchLineOffset = iCount*1.0*fPitchScale;
-
-        // major line
-        glVertex3f(-0.3,fPitchLineOffset,0.0);
-        glVertex3f(0.3,fPitchLineOffset,0.0);
-
-        // major line
-        glVertex3f(-0.3,-fPitchLineOffset,0.0);
-        glVertex3f(0.3,-fPitchLineOffset,0.0);
-
-
-        // minor line
-        glVertex3f(-0.15,fPitchLineOffset + 0.5 * fPitchScale,0.0);
-        glVertex3f(0.15,fPitchLineOffset + 0.5 * fPitchScale,0.0);
-
-        glVertex3f(-0.15,-fPitchLineOffset - 0.5 * fPitchScale,0.0);
-        glVertex3f(0.15,-fPitchLineOffset - 0.5 * fPitchScale,0.0);
-
+        x1 = 0.5 * cos((float)iCount * DEG2RAD);
+        y1 = 0.5 * sin((float)iCount * DEG2RAD);
+        x2 = 0.475 * cos((float)iCount * DEG2RAD);
+        y2 = 0.475 * sin((float)iCount * DEG2RAD);
+        glVertex3f(x1,y1,0.0);
+        glVertex3f(x2,y2,0.0);
     }
+
+    // major ticks
+    for(iCount=0;iCount < 360;iCount = iCount + 10)
+    {
+        x1 = 0.5 * cos((float)iCount * DEG2RAD);
+        y1 = 0.5 * sin((float)iCount * DEG2RAD);
+        x2 = 0.45 * cos((float)iCount * DEG2RAD);
+        y2 = 0.45 * sin((float)iCount * DEG2RAD);
+        glVertex3f(x1,y1,0.0);
+        glVertex3f(x2,y2,0.0);
+    }
+
+
+
+
     glEnd();
 
-    glDisable(GL_SCISSOR_TEST);
-
-    // sky
-    glColor3f(0.0,0.0,1.0);
-    glBegin(GL_POLYGON);
-     glVertex3f(-10.0, 0.0, 0.0);
-     glVertex3f(10.0, 0.0, 0.0);
-     glVertex3f(10.0, 10.0, 0.0);
-     glVertex3f(-10.0, 10.0, 0.0);
-    glEnd();
-
-    // ground
-    glColor3f(0.5,0.3,0.3);
-    glBegin(GL_POLYGON);
-     glVertex3f(-10.0, 0.0, 0.0);
-     glVertex3f(10.0, 0.0, 0.0);
-     glVertex3f(10.0, -10.0, 0.0);
-     glVertex3f(-10.0, -10.0, 0.0);
-    glEnd();
 
     glPopMatrix();
-    glPopMatrix();
 
+    glColor3f(1.0,1.0,1.0);
+    renderText(0.5,0.8,0.0,"TEST TEST");
 
-
+    renderText(0.0,0.0,0.0,"000");
 
 
 }
@@ -374,21 +389,22 @@ void myGLWidget::resizeGL(int width, int height)
 
 
 
-void myGLWidget::renderText(double x, double y, double z, const QString &str, const QFont & font)
+void myGLWidget::renderText(double x, double y, double z, const QString &str)
 {
-    // Identify x and y locations to render text within widget
-    int height = this->height();
-    GLdouble textPosX = x, textPosY = y, textPosZ = z;
+    // map window coordinates to GL coordinates
+    GLdouble textPosX = x * this->width()/2.0 + this->width()/2.0;
+    GLdouble textPosY = (-y * this->height()/2.0 + this->height()/2.0);
+    GLdouble textPosZ = z;
 
-    // Retrieve last OpenGL color to use as a font color
-    GLdouble glColor[4];
-    glGetDoublev(GL_CURRENT_COLOR, glColor);
-    QColor fontColor = QColor(glColor[0], glColor[1], glColor[2], glColor[3]);
+//    // Retrieve last OpenGL color to use as a font color
+    GLdouble glColour[4];
+    glGetDoublev(GL_CURRENT_COLOR, glColour);
+    QColor fontColour = QColor(glColour[0]*255, glColour[1]*255, glColour[2]*255,glColour[3]*255);
 
     // Render text
     QPainter painter(this);
-    painter.setPen(fontColor);
-    painter.setFont(font);
+    painter.setPen(fontColour);
+    painter.setFont(QFont("Arial", 16));
     painter.drawText(textPosX, textPosY, str);
     painter.end();
 }
